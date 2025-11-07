@@ -1,0 +1,234 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Notification Settings" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{% trans "Notification Settings" %}</h1>
+        <p class="text-gray-600 mt-2">{% trans "Manage how you receive notifications" %}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm">
+        <form method="post" class="divide-y divide-gray-200">
+            {% csrf_token %}
+
+            <!-- Email Notifications -->
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{% trans "Email Notifications" %}</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.email_order_updates.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Order Updates" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Get notified when your order status changes" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.email_order_updates }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.email_price_drops.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Price Drops" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Alert when items in your wishlist go on sale" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.email_price_drops }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.email_product_restock.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Product Restock" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Know when out-of-stock items are available" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.email_product_restock }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.email_new_products.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "New Products" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Get notified about new products from stores you follow" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.email_new_products }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.email_promotions.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Promotions & Offers" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Special deals and promotional campaigns" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.email_promotions }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Push Notifications -->
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{% trans "Push Notifications" %}</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.push_order_updates.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Order Updates" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Real-time order status notifications" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.push_order_updates }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.push_price_drops.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Price Drops" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Instant price drop alerts" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.push_price_drops }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.push_flash_sales.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Flash Sales" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Don't miss limited-time deals" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.push_flash_sales }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS Notifications -->
+            <div class="p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">{% trans "SMS Notifications" %}</h3>
+                
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
+                    <p class="text-sm text-blue-700">
+                        <strong>{% trans "Note:" %}</strong> {% trans "Standard messaging rates may apply" %}
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.sms_order_updates.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Order Updates" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Critical order updates via SMS" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.sms_order_updates }}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label for="{{ form.sms_delivery_updates.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Delivery Updates" %}
+                            </label>
+                            <p class="text-sm text-gray-500">{% trans "Track your delivery status" %}</p>
+                        </div>
+                        <div class="ml-4">
+                            {{ form.sms_delivery_updates }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="px-6 py-4 bg-gray-50 flex justify-between items-center">
+                <a href="{% url 'notifications:list' %}" class="text-sm text-gray-600 hover:text-gray-900">
+                    {% trans "Cancel" %}
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    {% trans "Save Preferences" %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Notification Frequency -->
+    <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{% trans "Notification Frequency" %}</h3>
+        
+        <div class="space-y-3">
+            <label class="flex items-center">
+                <input type="radio" name="frequency" value="realtime" class="form-radio h-4 w-4 text-blue-600" checked>
+                <span class="ml-3 text-gray-700">{% trans "Real-time - Get notified immediately" %}</span>
+            </label>
+            
+            <label class="flex items-center">
+                <input type="radio" name="frequency" value="daily" class="form-radio h-4 w-4 text-blue-600">
+                <span class="ml-3 text-gray-700">{% trans "Daily digest - Once per day summary" %}</span>
+            </label>
+            
+            <label class="flex items-center">
+                <input type="radio" name="frequency" value="weekly" class="form-radio h-4 w-4 text-blue-600">
+                <span class="ml-3 text-gray-700">{% trans "Weekly digest - Once per week summary" %}</span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="checkbox"] {
+        width: 2.5rem;
+        height: 1.5rem;
+        border-radius: 9999px;
+        background-color: #d1d5db;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    
+    input[type="checkbox"]:checked {
+        background-color: #3b82f6;
+    }
+    
+    input[type="checkbox"]::before {
+        content: '';
+        position: absolute;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        background-color: white;
+        top: 0.125rem;
+        left: 0.125rem;
+        transition: transform 0.2s;
+    }
+    
+    input[type="checkbox"]:checked::before {
+        transform: translateX(1rem);
+    }
+</style>
+{% endblock %}

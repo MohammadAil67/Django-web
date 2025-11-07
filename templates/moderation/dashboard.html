@@ -1,0 +1,222 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Admin Dashboard - Minimalist Marketplace" %}{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            {% trans "Admin Dashboard" %}
+        </h1>
+        <p class="text-gray-600">
+            {% trans "Manage sellers, products, and marketplace operations" %}
+        </p>
+    </div>
+    
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        
+        <!-- Total Sellers -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{% trans "Total Sellers" %}</dt>
+                        <dd class="text-lg font-medium text-gray-900">{{ total_sellers }}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex items-center text-sm">
+                    <span class="text-red-600">{{ pending_sellers }} {% trans "pending" %}</span>
+                    <a href="{% url 'moderation:seller_management' %}" class="ml-auto text-blue-600 hover:text-blue-500">
+                        {% trans "Review →" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Products -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{% trans "Total Products" %}</dt>
+                        <dd class="text-lg font-medium text-gray-900">{{ total_products }}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex items-center text-sm">
+                    <span class="text-yellow-600">{{ pending_products }} {% trans "draft" %}</span>
+                    <a href="{% url 'moderation:product_moderation' %}" class="ml-auto text-blue-600 hover:text-blue-500">
+                        {% trans "Review →" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- KYC Requests -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{% trans "KYC Requests" %}</dt>
+                        <dd class="text-lg font-medium text-gray-900">{{ pending_kyc }}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{% url 'moderation:kyc_review' %}" class="text-blue-600 hover:text-blue-500 text-sm">
+                    {% trans "Review Documents →" %}
+                </a>
+            </div>
+        </div>
+        
+        <!-- Content Flags -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                    <dl>
+                        <dt class="text-sm font-medium text-gray-500 truncate">{% trans "Content Flags" %}</dt>
+                        <dd class="text-lg font-medium text-gray-900">{{ pending_content_flags }}</dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{% url 'moderation:content_flags' %}" class="text-blue-600 hover:text-blue-500 text-sm">
+                    {% trans "Review Flags →" %}
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">{% trans "Quick Actions" %}</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{% url 'moderation:seller_management' %}" 
+               class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-minimal focus-ring">
+                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <span class="text-sm font-medium text-gray-700">{% trans "Manage Sellers" %}</span>
+            </a>
+            
+            <a href="{% url 'moderation:product_moderation' %}" 
+               class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-minimal focus-ring">
+                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <span class="text-sm font-medium text-gray-700">{% trans "Moderate Products" %}</span>
+            </a>
+            
+            <a href="{% url 'moderation:kyc_review' %}" 
+               class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-minimal focus-ring">
+                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="text-sm font-medium text-gray-700">{% trans "Review KYC" %}</span>
+            </a>
+            
+            <a href="{% url 'moderation:reports' %}" 
+               class="flex flex-col items-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-minimal focus-ring">
+                <svg class="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span class="text-sm font-medium text-gray-700">{% trans "View Reports" %}</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-900">{% trans "Recent Activity" %}</h3>
+        </div>
+        <div class="p-6">
+            {% if recent_actions %}
+                <div class="space-y-4">
+                    {% for action in recent_actions %}
+                    <div class="flex items-start space-x-4 p-3 hover:bg-gray-50 rounded-lg transition-minimal">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                {% if action.moderator.profile_image %}
+                                    <img src="{{ action.moderator.profile_image.url }}" 
+                                         alt="{{ action.moderator.username }}"
+                                         class="w-8 h-8 rounded-full object-cover">
+                                {% else %}
+                                    <span class="text-sm font-medium text-gray-600">
+                                        {{ action.moderator.username|first|upper }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-900">
+                                <span class="font-medium">{{ action.moderator.username }}</span>
+                                <span class="text-gray-600">{{ action.get_action_type_display|lower }}</span>
+                                {% if action.content_object %}
+                                    <span class="font-medium">{{ action.content_object }}</span>
+                                {% endif %}
+                            </p>
+                            <p class="text-xs text-gray-500">{{ action.created_at|timesince }} {% trans "ago" %}</p>
+                            {% if action.reason %}
+                                <p class="text-xs text-gray-600 mt-1">{{ action.reason|truncatechars:100 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="px-2 py-1 text-xs rounded-full {% if action.severity == 'critical' %}bg-red-100 text-red-800{% elif action.severity == 'high' %}bg-orange-100 text-orange-800{% elif action.severity == 'medium' %}bg-yellow-100 text-yellow-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                {{ action.get_severity_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">{% trans "No recent activity" %}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{% trans "Moderation actions will appear here." %}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}

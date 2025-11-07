@@ -1,0 +1,238 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Minimalist Marketplace - Clean Design, Powerful Features" %}{% endblock %}
+{% block meta_description %}{% trans "Discover amazing products from verified sellers in our minimalist marketplace. Clean design, powerful features, and seamless shopping experience." %}{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            
+            <!-- Hero Content -->
+            <div class="space-y-8">
+                <div class="space-y-4">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                        {% trans "Welcome to" %}
+                        <span class="text-blue-600">{% trans "Minimalist" %}</span>
+                        {% trans "Marketplace" %}
+                    </h1>
+                    <p class="text-xl text-gray-600 leading-relaxed">
+                        {% trans "Discover amazing products from verified sellers. Clean design, powerful features, and seamless shopping experience in one beautiful package." %}
+                    </p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'products:list' %}" 
+                       class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-minimal text-center focus-ring">
+                        {% trans "Browse Products" %}
+                    </a>
+                    <a href="{% url 'users:register_seller' %}" 
+                       class="bg-white text-gray-700 px-8 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-minimal text-center focus-ring">
+                        {% trans "Start Selling" %}
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">10K+</div>
+                        <div class="text-sm text-gray-600">{% trans "Products" %}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">500+</div>
+                        <div class="text-sm text-gray-600">{% trans "Sellers" %}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">50K+</div>
+                        <div class="text-sm text-gray-600">{% trans "Customers" %}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hero Image -->
+            <div class="relative">
+                <div class="bg-white rounded-2xl shadow-xl p-8 transform rotate-3 hover:rotate-0 transition-minimal">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-4">
+                            <div class="bg-gray-200 rounded-lg h-24 skeleton"></div>
+                            <div class="bg-gray-200 rounded-lg h-20 skeleton"></div>
+                        </div>
+                        <div class="space-y-4 mt-8">
+                            <div class="bg-gray-200 rounded-lg h-20 skeleton"></div>
+                            <div class="bg-gray-200 rounded-lg h-24 skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -bottom-4 -right-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Deals -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Featured Deals" %}</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                {% trans "Discover amazing discounts and special offers from our top sellers. Limited time deals you don't want to miss!" %}
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for i in "1234" %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                <div class="relative">
+                    <div class="bg-gray-200 h-48 skeleton"></div>
+                    <div class="absolute top-3 left-3">
+                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            {% trans "30% OFF" %}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">{% trans "Premium Product" %}</h3>
+                    <p class="text-gray-600 text-sm mb-3">{% trans "High-quality product with amazing features" %}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold text-blue-600">$49</span>
+                            <span class="text-sm text-gray-500 line-through">$70</span>
+                        </div>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-minimal">
+                            {% trans "Add to Cart" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-12">
+            <a href="{% url 'campaigns:list' %}" 
+               class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-minimal focus-ring">
+                {% trans "View All Deals" %}
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Categories -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Shop by Category" %}</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                {% trans "Explore our wide range of categories and find exactly what you're looking for." %}
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {% for category in categories %}
+            <a href="{% url 'products:category' category.slug %}" 
+               class="bg-white rounded-xl p-6 text-center card-hover border border-gray-200 focus-ring">
+                <div class="bg-gray-100 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-1">{{ category.name }}</h3>
+                <p class="text-sm text-gray-600">{{ category.product_count }} {% trans "items" %}</p>
+            </a>
+            {% empty %}
+            {% for i in "123456" %}
+            <a href="{% url 'products:list' %}" 
+               class="bg-white rounded-xl p-6 text-center card-hover border border-gray-200 focus-ring">
+                <div class="bg-gray-100 rounded-lg w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-1">{% trans "Category" %} {{ i }}</h3>
+                <p class="text-sm text-gray-600">{% trans "100+ items" %}</p>
+            </a>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Why Choose Us" %}</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                {% trans "Experience the difference with our minimalist approach to online marketplace." %}
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Verified Sellers" %}</h3>
+                <p class="text-gray-600">
+                    {% trans "All sellers go through rigorous KYC verification process to ensure trust and safety." %}
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-green-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Lightning Fast" %}</h3>
+                <p class="text-gray-600">
+                    {% trans "Optimized for speed with low-bandwidth mode and progressive loading for all users." %}
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-purple-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{% trans "Secure & Safe" %}</h3>
+                <p class="text-gray-600">
+                    {% trans "Advanced security measures and fraud detection to protect your transactions." %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold text-white mb-4">
+            {% trans "Ready to Start Your Journey?" %}
+        </h2>
+        <p class="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
+            {% trans "Join thousands of buyers and sellers who trust our minimalist marketplace for their e-commerce needs." %}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'users:register' %}" 
+               class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-minimal focus-ring">
+                {% trans "Start Shopping" %}
+            </a>
+            <a href="{% url 'users:register_seller' %}" 
+               class="bg-transparent text-white px-8 py-3 rounded-lg font-semibold border-2 border-white hover:bg-white hover:text-blue-600 transition-minimal focus-ring">
+                {% trans "Become a Seller" %}
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

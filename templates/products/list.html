@@ -1,0 +1,225 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Products - Minimalist Marketplace" %}{% endblock %}
+{% block meta_description %}{% trans "Browse our wide selection of products from verified sellers. Find exactly what you're looking for with our clean and intuitive interface." %}{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{% trans "All Products" %}</h1>
+        <p class="text-gray-600">
+            {% trans "Discover amazing products from our verified sellers" %}
+            {% if category %}
+                {% blocktrans %}in {{ category.name }}{% endblocktrans %}
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- Filters and Sorting -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+            
+            <!-- Category Filter -->
+            <div class="flex items-center space-x-4">
+                <label class="text-sm font-medium text-gray-700">{% trans "Category:" %}</label>
+                <select class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">{% trans "All Categories" %}</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.slug }}" {% if category and category.slug == cat.slug %}selected{% endif %}>
+                            {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Sort Options -->
+            <div class="flex items-center space-x-4">
+                <label class="text-sm font-medium text-gray-700">{% trans "Sort by:" %}</label>
+                <select name="sort" class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="created_at">{% trans "Newest" %}</option>
+                    <option value="price_low">{% trans "Price: Low to High" %}</option>
+                    <option value="price_high">{% trans "Price: High to Low" %}</option>
+                    <option value="rating">{% trans "Best Rating" %}</option>
+                    <option value="name">{% trans "Name A-Z" %}</option>
+                </select>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="flex items-center space-x-2">
+                <button class="p-2 text-gray-400 hover:text-gray-600 transition-minimal" title="{% trans 'Grid View' %}">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                </button>
+                <button class="p-2 text-gray-600 hover:text-gray-800 transition-minimal" title="{% trans 'List View' %}">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Products Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden transition-minimal">
+            
+            <!-- Product Image -->
+            <div class="relative">
+                <a href="{% url 'products:detail' slug=product.slug %}">
+                    {% if product.main_image %}
+                        <img src="{{ product.main_image.image.url }}" 
+                             alt="{{ product.title }}"
+                             class="w-full h-48 object-cover">
+                    {% else %}
+                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                            <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                    {% endif %}
+                </a>
+                
+                <!-- Badges -->
+                <div class="absolute top-3 left-3 space-y-1">
+                    {% if product.is_featured %}
+                        <span class="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            {% trans "Featured" %}
+                        </span>
+                    {% endif %}
+                    {% if product.discount_percentage > 0 %}
+                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                            -{{ product.discount_percentage }}%
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Wishlist Button -->
+                <div class="absolute top-3 right-3">
+                    <button class="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-minimal focus-ring">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Product Info -->
+            <div class="p-4">
+                <div class="mb-2">
+                    <a href="{% url 'sellers:store_detail' slug=product.seller.store_slug %}" 
+                       class="text-xs text-gray-500 hover:text-blue-600 transition-minimal">
+                        {{ product.seller.store_name }}
+                    </a>
+                </div>
+                
+                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">
+                    <a href="{% url 'products:detail' slug=product.slug %}" 
+                       class="hover:text-blue-600 transition-minimal">
+                        {{ product.title }}
+                    </a>
+                </h3>
+                
+                <div class="flex items-center mb-3">
+                    <div class="flex items-center">
+                        {% for i in "12345" %}
+                            <svg class="w-4 h-4 {% if product.rating >= i|add:"0" %}text-yellow-400{% else %}text-gray-300{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        {% endfor %}
+                        <span class="ml-2 text-sm text-gray-600">({{ product.review_count }})</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-bold text-gray-900">${{ product.price }}</span>
+                        {% if product.old_price %}
+                            <span class="text-sm text-gray-500 line-through">${{ product.old_price }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-minimal focus-ring">
+                        {% trans "Add to Cart" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        
+        <!-- Empty State -->
+        <div class="col-span-full text-center py-12">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">{% trans "No products found" %}</h3>
+            <p class="mt-1 text-sm text-gray-500">
+                {% trans "Try adjusting your search or filter criteria." %}
+            </p>
+        </div>
+        
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <div class="mt-12 flex items-center justify-center">
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="{% trans 'Pagination' %}">
+            
+            <!-- Previous -->
+            {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-minimal">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            {% else %}
+                <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </span>
+            {% endif %}
+            
+            <!-- Page Numbers -->
+            {% for num in products.paginator.page_range %}
+                {% if products.number == num %}
+                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
+                        {{ num }}
+                    </span>
+                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                    <a href="?page={{ num }}" 
+                       class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-minimal">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            <!-- Next -->
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" 
+                   class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-minimal">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            {% else %}
+                <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-gray-100 text-sm font-medium text-gray-300 cursor-not-allowed">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </span>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+    
+</div>
+
+{% endblock %}

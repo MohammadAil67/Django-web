@@ -1,0 +1,283 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Edit Profile" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">{% trans "Edit Profile" %}</h1>
+        <p class="text-gray-600 mt-2">{% trans "Update your account information and preferences" %}</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Display Non-Field Errors -->
+            {% if form.non_field_errors %}
+                <div class="p-4 bg-red-50 border-l-4 border-red-400">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                {% trans "Please correct the errors below:" %}
+                            </h3>
+                            <div class="mt-2 text-sm text-red-700">
+                                {{ form.non_field_errors }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Personal Information Section -->
+            <div class="p-6 border-b">
+                <h3 class="text-lg font-medium text-gray-900 mb-6">{% trans "Personal Information" %}</h3>
+                
+                <!-- Name Fields Grid -->
+                <div class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-4 mb-6">
+                    <div class="sm:col-span-2">
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "First Name" %}
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="text" 
+                                name="{{ form.first_name.name }}"
+                                id="{{ form.first_name.id_for_label }}"
+                                value="{{ form.first_name.value|default:'' }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                {% if form.first_name.field.required %}required{% endif %}
+                            >
+                        </div>
+                        {% if form.first_name.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "Last Name" %}
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="text" 
+                                name="{{ form.last_name.name }}"
+                                id="{{ form.last_name.id_for_label }}"
+                                value="{{ form.last_name.value|default:'' }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                {% if form.last_name.field.required %}required{% endif %}
+                            >
+                        </div>
+                        {% if form.last_name.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Email Field -->
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "Email Address" %}
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="email" 
+                                name="{{ form.email.name }}"
+                                id="{{ form.email.id_for_label }}"
+                                value="{{ form.email.value|default:'' }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                {% if form.email.field.required %}required{% endif %}
+                            >
+                        </div>
+                        {% if form.email.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Phone Number Field -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "Phone Number" %}
+                        </label>
+                        <div class="mt-1">
+                            <input 
+                                type="tel" 
+                                name="{{ form.phone_number.name }}"
+                                id="{{ form.phone_number.id_for_label }}"
+                                value="{{ form.phone_number.value|default:'' }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                placeholder="+1 (555) 123-4567"
+                            >
+                        </div>
+                        {% if form.phone_number.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.phone_number.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="p-6 border-b">
+                <h3 class="text-lg font-medium text-gray-900 mb-6">{% trans "Preferences" %}</h3>
+                
+                <!-- Preferred Language -->
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label for="{{ form.preferred_language.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "Preferred Language" %}
+                        </label>
+                        <div class="mt-1">
+                            <select 
+                                name="{{ form.preferred_language.name }}"
+                                id="{{ form.preferred_language.id_for_label }}"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            >
+                                {% for value, label in form.preferred_language.field.choices %}
+                                    <option value="{{ value }}" {% if form.preferred_language.value == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if form.preferred_language.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.preferred_language.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notification Settings Section -->
+            <div class="p-6 border-b">
+                <h3 class="text-lg font-medium text-gray-900 mb-6">{% trans "Notification Settings" %}</h3>
+                
+                <div class="space-y-4">
+                    <!-- Email Notifications -->
+                    {% if form.email_notifications %}
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input 
+                                type="checkbox" 
+                                name="{{ form.email_notifications.name }}"
+                                id="{{ form.email_notifications.id_for_label }}"
+                                {% if form.email_notifications.value %}checked{% endif %}
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            >
+                        </div>
+                        <div class="ml-3">
+                            <label for="{{ form.email_notifications.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Email Notifications" %}
+                            </label>
+                            <p class="text-sm text-gray-500">
+                                {% trans "Receive email updates about orders, promotions, and account activity" %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Push Notifications -->
+                    {% if form.push_notifications %}
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input 
+                                type="checkbox" 
+                                name="{{ form.push_notifications.name }}"
+                                id="{{ form.push_notifications.id_for_label }}"
+                                {% if form.push_notifications.value %}checked{% endif %}
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            >
+                        </div>
+                        <div class="ml-3">
+                            <label for="{{ form.push_notifications.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Push Notifications" %}
+                            </label>
+                            <p class="text-sm text-gray-500">
+                                {% trans "Get instant browser notifications for important updates" %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- SMS Notifications -->
+                    {% if form.sms_notifications %}
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input 
+                                type="checkbox" 
+                                name="{{ form.sms_notifications.name }}"
+                                id="{{ form.sms_notifications.id_for_label }}"
+                                {% if form.sms_notifications.value %}checked{% endif %}
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            >
+                        </div>
+                        <div class="ml-3">
+                            <label for="{{ form.sms_notifications.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "SMS Notifications" %}
+                            </label>
+                            <p class="text-sm text-gray-500">
+                                {% trans "Receive text message alerts for critical updates" %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Reduced Data Mode -->
+                    {% if form.reduced_data_mode %}
+                    <div class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input 
+                                type="checkbox" 
+                                name="{{ form.reduced_data_mode.name }}"
+                                id="{{ form.reduced_data_mode.id_for_label }}"
+                                {% if form.reduced_data_mode.value %}checked{% endif %}
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            >
+                        </div>
+                        <div class="ml-3">
+                            <label for="{{ form.reduced_data_mode.id_for_label }}" class="font-medium text-gray-700">
+                                {% trans "Reduced Data Mode" %}
+                            </label>
+                            <p class="text-sm text-gray-500">
+                                {% trans "Load optimized images and reduce data usage" %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="px-6 py-4 bg-gray-50 flex items-center justify-between">
+                <a href="{% url 'users:profile' %}" class="text-sm font-medium text-gray-700 hover:text-gray-900">
+                    {% trans "Cancel" %}
+                </a>
+                <button 
+                    type="submit" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:w-auto sm:ml-3"
+                >
+                    {% trans "Save Changes" %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Alternative: Using Crispy Forms (Uncomment to use) -->
+    <!--
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden p-6">
+        {% crispy form %}
+    </div>
+    -->
+</div>
+{% endblock %}

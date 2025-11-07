@@ -1,0 +1,262 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Register as Seller" %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="text-center">
+            <svg class="mx-auto h-12 w-12 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+        </div>
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            {% trans "Start selling on our platform" %}
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            {% trans "Or" %}
+            <a href="{% url 'users:register' %}" class="font-medium text-blue-600 hover:text-blue-500">
+                {% trans "register as a buyer" %}
+            </a>
+        </p>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <!-- Benefits Banner -->
+            <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
+                <p class="text-sm text-blue-700 font-medium">
+                    {% trans "Seller Benefits:" %}
+                </p>
+                <ul class="mt-2 text-sm text-blue-600 space-y-1">
+                    <li>✓ {% trans "Low commission rates" %}</li>
+                    <li>✓ {% trans "Access to millions of buyers" %}</li>
+                    <li>✓ {% trans "Easy store management" %}</li>
+                    <li>✓ {% trans "Secure payments" %}</li>
+                </ul>
+            </div>
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="rounded-md bg-red-50 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800">
+                                {{ form.non_field_errors }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Account Information -->
+                <div class="border-b border-gray-200 pb-4">
+                    <h3 class="text-lg font-medium text-gray-900">{% trans "Account Information" %}</h3>
+                </div>
+
+                <!-- Username -->
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Username" %} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1">
+                        {{ form.username }}
+                    </div>
+                    {% if form.username.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Email address" %} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1">
+                        {{ form.email }}
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- First Name & Last Name -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "First name" %} <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            {{ form.first_name }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            {% trans "Last name" %} <span class="text-red-500">*</span>
+                        </label>
+                        <div class="mt-1">
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Store Information -->
+                <div class="border-b border-gray-200 pb-4 pt-4">
+                    <h3 class="text-lg font-medium text-gray-900">{% trans "Store Information" %}</h3>
+                </div>
+
+                <!-- Store Name -->
+                <div>
+                    <label for="{{ form.store_name.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Store name" %} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1">
+                        {{ form.store_name }}
+                    </div>
+                    {% if form.store_name.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.store_name.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500">{% trans "This will be your public store name" %}</p>
+                </div>
+
+                <!-- Store Description -->
+                <div>
+                    <label for="{{ form.store_description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Store description" %}
+                    </label>
+                    <div class="mt-1">
+                        {{ form.store_description }}
+                    </div>
+                    {% if form.store_description.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.store_description.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-sm text-gray-500">{% trans "Brief description of what you sell" %}</p>
+                </div>
+
+                <!-- Phone Number -->
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Phone number" %}
+                    </label>
+                    <div class="mt-1">
+                        {{ form.phone_number }}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="{{ form.password1.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Password" %} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1">
+                        {{ form.password1 }}
+                    </div>
+                    {% if form.password1.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="{{ form.password2.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Confirm password" %} <span class="text-red-500">*</span>
+                    </label>
+                    <div class="mt-1">
+                        {{ form.password2 }}
+                    </div>
+                    {% if form.password2.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Terms Agreement -->
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input id="terms" name="terms" type="checkbox" required class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">
+                            {% trans "I agree to the" %}
+                            <a href="#" class="text-blue-600 hover:text-blue-500">{% trans "Terms and Conditions" %}</a>
+                            {% trans "and" %}
+                            <a href="#" class="text-blue-600 hover:text-blue-500">{% trans "Seller Agreement" %}</a>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        {% trans "Create seller account" %}
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500">
+                            {% trans "Already have an account?" %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <a href="{% url 'users:login' %}" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        {% trans "Sign in" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Style form inputs */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+    
+    textarea {
+        min-height: 80px;
+    }
+    
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        ring: 2px;
+        ring-color: #3b82f6;
+        ring-opacity: 0.5;
+    }
+    
+    .errorlist {
+        display: none;
+    }
+</style>
+{% endblock %}
