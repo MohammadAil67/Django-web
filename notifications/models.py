@@ -6,6 +6,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 User = get_user_model()
 
+#There are some things that need to change 
+
 class Notification(models.Model):
     """Generic notification system for all user activities"""
     

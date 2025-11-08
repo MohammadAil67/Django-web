@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -133,11 +134,11 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-        
         # Set published date when product is published
         if self.status == self.Status.PUBLISHED and not self.published_at:
-            self.published_at = models.DateTimeField().value_from_object(self)
+            self.published_at = timezone.now()
         
+        super().save(*args, **kwargs)
         super().save(*args, **kwargs)
     
     @property

@@ -262,8 +262,7 @@ class Ad(models.Model):
         APPROVED = 'approved', _('Approved')
         ACTIVE = 'active', _('Active')
         PAUSED = 'paused', _('Paused')
-        EXPIRED = 'expired', _('Expired')
-        CANCELLED = 'cancelled', _('Cancelled')
+        #EXPIRED = 'expired', _('Expired')
     
     class Placement(models.TextChoices):
         HOMEPAGE_HERO = 'homepage_hero', _('Homepage Hero')
