@@ -100,14 +100,23 @@
                 </div>
                 
                 <!-- Wishlist Button -->
-                <div class="absolute top-3 right-3">
-                    <button class="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-minimal focus-ring">
-                        <svg class="w-5 h-5 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
+                <button 
+                onclick="toggleWishlist({{ product.id }}, this)" 
+                class="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+                title="{% trans 'Add to wishlist' %}"
+            >
+                {% if is_in_wishlist %}
+                    <!-- Filled heart -->
+                    <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                    </svg>
+                {% else %}
+                    <!-- Outline heart -->
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                {% endif %}
+            </button>
             
             <!-- Product Info -->
             <div class="p-4">
@@ -221,5 +230,183 @@
     {% endif %}
     
 </div>
+
+</div> <!-- Close your content wrapper -->
+</div> <!-- Close main container -->
+
+<!-- ============================================ -->
+<!-- WISHLIST & CART JAVASCRIPT -->
+<!-- ============================================ -->
+<script>
+// ============================================================================
+// CSRF Token Helper
+// ============================================================================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// ============================================================================
+// Add to Wishlist (AJAX)
+// ============================================================================
+function addToWishlist(productId, button) {
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    
+    fetch(`/users/wishlist/add/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+        return response.text();
+    })
+    .then(html => {
+        if (html) {
+            button.innerHTML = `
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                </svg>
+            `;
+            button.classList.remove('text-gray-600', 'hover:text-red-500');
+            button.classList.add('text-red-500');
+            button.disabled = false;
+            showToast('Added to wishlist!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        showToast('Failed to add to wishlist', 'error');
+    });
+}
+
+// ============================================================================
+// Remove from Wishlist (AJAX)
+// ============================================================================
+function removeFromWishlist(productId, button) {
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    const originalContent = button.innerHTML;
+    button.innerHTML = '<svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    
+    fetch(`/users/wishlist/remove/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+        return response.text();
+    })
+    .then(html => {
+        if (html) {
+            button.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+            `;
+            button.classList.remove('text-red-500');
+            button.classList.add('text-gray-600', 'hover:text-red-500');
+            button.disabled = false;
+            showToast('Removed from wishlist!', 'success');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalContent;
+        button.disabled = false;
+        showToast('Failed to remove from wishlist', 'error');
+    });
+}
+
+// ============================================================================
+// Toggle Wishlist (Smart)
+// ============================================================================
+function toggleWishlist(productId, button) {
+    const isInWishlist = button.querySelector('svg').getAttribute('fill') === 'currentColor';
+    
+    if (isInWishlist) {
+        removeFromWishlist(productId, button);
+    } else {
+        addToWishlist(productId, button);
+    }
+}
+
+// ============================================================================
+// Add to Cart (Placeholder)
+// ============================================================================
+function addToCart(productId) {
+    console.log('Add to cart:', productId);
+    showToast('Add to cart functionality coming soon!', 'info');
+}
+
+// ============================================================================
+// Toast Notifications
+// ============================================================================
+function showToast(message, type = 'info') {
+    const existingToasts = document.querySelectorAll('.toast-notification');
+    existingToasts.forEach(toast => toast.remove());
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white';
+    
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        warning: 'bg-yellow-500',
+        info: 'bg-blue-500'
+    };
+    
+    toast.classList.add(colors[type] || colors.info);
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================================================
+// Debug: Log when script loads
+// ============================================================================
+console.log('✅ Wishlist script loaded successfully!');
+console.log('CSRF Token:', csrftoken);
+</script>
+
+<style>
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+</style>
 
 {% endblock %}

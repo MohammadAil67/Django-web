@@ -22,6 +22,9 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+     # Users
+    path('users/', include('users.urls')),  # ✅ This line must exist
     
     # Home page
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -34,7 +37,7 @@ urlpatterns = [
     
     # Sellers
     path('sellers/', include('sellers.urls')),
-    
+
     # Campaigns
     path('campaigns/', include('campaigns.urls')),
     
