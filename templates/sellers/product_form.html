@@ -1,0 +1,332 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% if object %}{% trans "Edit Product" %}{% else %}{% trans "Add Product" %}{% endif %} - Seller Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">
+            {% if object %}
+                {% trans "Edit Product" %}
+            {% else %}
+                {% trans "Add New Product" %}
+            {% endif %}
+        </h1>
+        <p class="mt-2 text-sm text-gray-600">
+            {% trans "Fill in the product details below" %}
+        </p>
+    </div>
+
+    <!-- Form -->
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "Basic Information" %}</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Product Title" %} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.slug.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Slug" %}
+                    </label>
+                    {{ form.slug }}
+                    <p class="mt-1 text-sm text-gray-500">{% trans "URL-friendly version of the title. Leave blank to auto-generate." %}</p>
+                    {% if form.slug.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.slug.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Category" %} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Description" %} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.short_description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Short Description" %}
+                    </label>
+                    {{ form.short_description }}
+                    {% if form.short_description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.short_description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing & Inventory -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "Pricing & Inventory" %}</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.price.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Price" %} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.price }}
+                    {% if form.price.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.old_price.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Old Price" %}
+                    </label>
+                    {{ form.old_price }}
+                    {% if form.old_price.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.old_price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.cost_price.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Cost Price" %}
+                    </label>
+                    {{ form.cost_price }}
+                    {% if form.cost_price.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.cost_price.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.sku.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "SKU" %}
+                    </label>
+                    {{ form.sku }}
+                    {% if form.sku.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.sku.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.stock_quantity.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Stock Quantity" %}
+                    </label>
+                    {{ form.stock_quantity }}
+                    {% if form.stock_quantity.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.stock_quantity.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.min_stock_level.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Min Stock Level" %}
+                    </label>
+                    {{ form.min_stock_level }}
+                    {% if form.min_stock_level.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.min_stock_level.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="flex items-center">
+                    {{ form.track_inventory }}
+                    <span class="ml-2 text-sm text-gray-700">{% trans "Track Inventory" %}</span>
+                </label>
+                {% if form.track_inventory.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.track_inventory.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "Product Details" %}</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.condition.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Condition" %}
+                    </label>
+                    {{ form.condition }}
+                    {% if form.condition.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.condition.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.brand.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Brand" %}
+                    </label>
+                    {{ form.brand }}
+                    {% if form.brand.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.brand.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.model.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Model" %}
+                    </label>
+                    {{ form.model }}
+                    {% if form.model.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.model.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.weight.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Weight" %}
+                    </label>
+                    {{ form.weight }}
+                    {% if form.weight.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.weight.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="{{ form.dimensions.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Dimensions" %}
+                    </label>
+                    {{ form.dimensions }}
+                    <p class="mt-1 text-sm text-gray-500">{% trans "Format: LxWxH (e.g., 10x5x3)" %}</p>
+                    {% if form.dimensions.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.dimensions.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="{{ form.attributes.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Attributes (JSON)" %}
+                    </label>
+                    {{ form.attributes }}
+                    <p class="mt-1 text-sm text-gray-500">{% trans "JSON format: {\"color\": \"red\", \"size\": \"M\"}" %}</p>
+                    {% if form.attributes.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.attributes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO & Marketing -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "SEO & Marketing" %}</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="{{ form.meta_title.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Meta Title" %}
+                    </label>
+                    {{ form.meta_title }}
+                    {% if form.meta_title.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.meta_title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.meta_description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Meta Description" %}
+                    </label>
+                    {{ form.meta_description }}
+                    {% if form.meta_description.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.meta_description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.keywords.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Keywords" %}
+                    </label>
+                    {{ form.keywords }}
+                    {% if form.keywords.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.keywords.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Status & Visibility -->
+        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "Status & Visibility" %}</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Status" %} <span class="text-red-500">*</span>
+                    </label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center pt-6">
+                    <label class="flex items-center">
+                        {{ form.is_featured }}
+                        <span class="ml-2 text-sm text-gray-700">{% trans "Featured Product" %}</span>
+                    </label>
+                    {% if form.is_featured.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ form.is_featured.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Errors -->
+        {% if form.non_field_errors %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800">{% trans "Please correct the following errors:" %}</h3>
+                        <div class="mt-2 text-sm text-red-700">
+                            <ul class="list-disc pl-5 space-y-1">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end space-x-4">
+            <a href="{% url 'sellers:products' %}" 
+               class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-minimal">
+                {% trans "Cancel" %}
+            </a>
+            <button type="submit" 
+                    class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-minimal">
+                {% trans "Save Product" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+

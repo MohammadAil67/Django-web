@@ -1,0 +1,199 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% if is_featured %}{% trans "Featured Stores" %}{% else %}{% trans "All Stores" %}{% endif %} - Minimalist Marketplace{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                        {% if is_featured %}
+                            {% trans "Featured Stores" %}
+                        {% else %}
+                            {% trans "All Stores" %}
+                        {% endif %}
+                    </h1>
+                    <p class="text-gray-600">
+                        {% if is_featured %}
+                            {% blocktrans with count=featured_stores_count %}Discover our {{ count }} featured stores with the best products and ratings.{% endblocktrans %}
+                        {% else %}
+                            {% blocktrans with count=total_stores %}Browse {{ count }} verified stores from trusted sellers.{% endblocktrans %}
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Filter Tabs -->
+                <div class="flex items-center space-x-2 bg-white rounded-lg p-1 shadow-sm border border-gray-200">
+                    <a href="{% url 'sellers:store_list' %}" 
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors {% if not is_featured %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-gray-900{% endif %}">
+                        {% trans "All Stores" %}
+                    </a>
+                    <a href="{% url 'sellers:store_list_featured' %}" 
+                       class="px-4 py-2 rounded-md text-sm font-medium transition-colors {% if is_featured %}bg-blue-600 text-white{% else %}text-gray-600 hover:text-gray-900{% endif %}">
+                        {% trans "Featured" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stores Grid -->
+        {% if stores %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for store in stores %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden transition-minimal">
+                <a href="{% url 'sellers:store_detail' slug=store.store_slug %}" class="block">
+                    <!-- Store Banner/Logo -->
+                    <div class="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
+                        {% if store.banner_image %}
+                            <img src="{{ store.banner_image.url }}" alt="{{ store.store_name }}" class="w-full h-full object-cover">
+                        {% elif store.logo %}
+                            <div class="flex items-center justify-center h-full">
+                                <img src="{{ store.logo.url }}" alt="{{ store.store_name }}" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">
+                            </div>
+                        {% else %}
+                            <div class="flex items-center justify-center h-full">
+                                <div class="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center border-4 border-white shadow-lg">
+                                    <span class="text-4xl font-bold text-white">{{ store.store_name|first|upper }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Featured Badge -->
+                        {% if store.featured %}
+                        <div class="absolute top-3 right-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-yellow-400 text-yellow-900">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                {% trans "Featured" %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Store Info -->
+                    <div class="p-6">
+                        <!-- Store Name and Verification -->
+                        <div class="mb-3">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-1 line-clamp-1">{{ store.store_name|default:store.user.username }}</h3>
+                            
+                            <!-- Verification Badge -->
+                            {% if store.verification_status == 'verified' %}
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-xs text-blue-600 font-medium">{% trans "Verified" %}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Store Description -->
+                        {% if store.description %}
+                        <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ store.description }}</p>
+                        {% endif %}
+
+                        <!-- Store Stats -->
+                        <div class="grid grid-cols-3 gap-2 pt-4 border-t border-gray-200">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-gray-900">
+                                    {{ store.published_products_count|default:0 }}
+                                </div>
+                                <div class="text-xs text-gray-500">{% trans "Products" %}</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-gray-900">{{ store.follower_count|default:0 }}</div>
+                                <div class="text-xs text-gray-500">{% trans "Followers" %}</div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <div class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                    <span class="text-lg font-bold text-gray-900">{{ store.rating|default:"0.0"|floatformat:1 }}</span>
+                                </div>
+                                <div class="text-xs text-gray-500">{% trans "Rating" %}</div>
+                            </div>
+                        </div>
+
+                        <!-- Tier Badge -->
+                        {% if store.tier %}
+                        <div class="mt-4 flex justify-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                {% if store.tier == 'platinum' %}bg-purple-100 text-purple-800
+                                {% elif store.tier == 'gold' %}bg-yellow-100 text-yellow-800
+                                {% elif store.tier == 'silver' %}bg-gray-100 text-gray-800
+                                {% else %}bg-orange-100 text-orange-800{% endif %}">
+                                {{ store.get_tier_display }} {% trans "Seller" %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-8 flex items-center justify-center">
+            <nav class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {% trans "First" %}
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {% trans "Previous" %}
+                    </a>
+                {% endif %}
+                
+                <span class="px-4 py-2 text-sm text-gray-700">
+                    {% blocktrans with num=page_obj.number pages=page_obj.paginator.num_pages %}Page {{ num }} of {{ pages }}{% endblocktrans %}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {% trans "Next" %}
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        {% trans "Last" %}
+                    </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+            <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <h3 class="mt-4 text-lg font-medium text-gray-900">
+                {% if is_featured %}
+                    {% trans "No featured stores yet" %}
+                {% else %}
+                    {% trans "No stores found" %}
+                {% endif %}
+            </h3>
+            <p class="mt-2 text-sm text-gray-500">
+                {% if is_featured %}
+                    {% trans "We don't have any featured stores at the moment. Check back soon!" %}
+                {% else %}
+                    {% trans "There are no stores available at the moment. Check back later!" %}
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

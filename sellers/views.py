@@ -5,7 +5,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Q, F, Model
+from django.db.models import Q, F, Count
 from .models import SellerProfile, KYCRequest, StoreFollow
 from .forms import SellerProfileForm, KYCRequestForm
 from products.models import Product
@@ -41,17 +41,17 @@ class SellerDashboardView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         seller_profile = self.request.user.seller_profile
         
-        # Get recent products
+        # Get recent products with images prefetched
         recent_products = Product.objects.filter(
             seller=seller_profile
-        ).order_by('-created_at')[:10]
+        ).select_related('category').prefetch_related('images').order_by('-created_at')[:10]
         
-        # Get low stock products
+        # Get low stock products with images prefetched
         low_stock_products = Product.objects.filter(
             seller=seller_profile,
-            stock_quantity__lte=Model.F('min_stock_level'),
+            stock_quantity__lte=F('min_stock_level'),
             track_inventory=True
-        )[:10]
+        ).select_related('category').prefetch_related('images')[:10]
         
         context.update({
             'seller_profile': seller_profile,
@@ -158,6 +158,51 @@ class KYCUploadView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         form.instance.seller = self.request.user.seller_profile
         return super().form_valid(form)
+
+class StoreListView(ListView):
+    model = SellerProfile
+    template_name = 'sellers/store_list.html'
+    context_object_name = 'stores'
+    paginate_by = 20
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Store the 'featured' flag from URL kwargs
+        self.is_featured = kwargs.pop('featured', False) or request.path.endswith('/featured/')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        queryset = SellerProfile.objects.filter(
+            is_active=True,
+            verification_status=SellerProfile.VerificationStatus.VERIFIED
+        ).select_related('user').annotate(
+            published_products_count=Count(
+                'products',
+                filter=Q(products__status='published', products__is_active=True)
+            )
+        )
+        
+        # Check if we're viewing featured stores
+        if self.is_featured:
+            queryset = queryset.filter(featured=True)
+        
+        # Order by featured first, then by rating and follower count
+        queryset = queryset.order_by('-featured', '-rating', '-follower_count', 'store_name')
+        
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_featured'] = self.is_featured
+        context['total_stores'] = SellerProfile.objects.filter(
+            is_active=True,
+            verification_status=SellerProfile.VerificationStatus.VERIFIED
+        ).count()
+        context['featured_stores_count'] = SellerProfile.objects.filter(
+            is_active=True,
+            featured=True,
+            verification_status=SellerProfile.VerificationStatus.VERIFIED
+        ).count()
+        return context
 
 class StoreDetailView(DetailView):
     model = SellerProfile

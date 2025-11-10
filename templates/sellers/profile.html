@@ -1,0 +1,188 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Store Profile - Seller Dashboard" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">{% trans "Store Profile" %}</h1>
+                <p class="mt-2 text-sm text-gray-600">{% trans "Manage your store information and settings" %}</p>
+            </div>
+            <a href="{% url 'sellers:profile_edit' %}" 
+               class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-minimal">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                {% trans "Edit Profile" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Store Information -->
+    <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{% trans "Store Information" %}</h2>
+        </div>
+        <div class="p-6">
+            <div class="flex items-start space-x-6">
+                {% if seller_profile.logo %}
+                    <img src="{{ seller_profile.logo.url }}" alt="{{ seller_profile.store_name }}" class="w-24 h-24 rounded-lg object-cover">
+                {% else %}
+                    <div class="w-24 h-24 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <span class="text-3xl font-bold text-white">{{ seller_profile.store_name|first|upper }}</span>
+                    </div>
+                {% endif %}
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-gray-900">{{ seller_profile.store_name|default:"No store name" }}</h3>
+                    {% if seller_profile.verification_status == 'verified' %}
+                        <div class="flex items-center mt-2">
+                            <svg class="w-5 h-5 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="text-sm text-blue-600 font-medium">{% trans "Verified Store" %}</span>
+                        </div>
+                    {% endif %}
+                    {% if seller_profile.description %}
+                        <p class="mt-3 text-gray-600">{{ seller_profile.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="text-sm font-medium text-gray-500">{% trans "Products" %}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ seller_profile.products.count }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="text-sm font-medium text-gray-500">{% trans "Followers" %}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ seller_profile.follower_count }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="text-sm font-medium text-gray-500">{% trans "Rating" %}</div>
+            <div class="text-2xl font-bold text-gray-900">{{ seller_profile.rating|default:"0.0"|floatformat:1 }}</div>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+            <div class="text-sm font-medium text-gray-500">{% trans "Total Sales" %}</div>
+            <div class="text-2xl font-bold text-gray-900">${{ seller_profile.total_sales|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Business Information -->
+    <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{% trans "Business Information" %}</h2>
+        </div>
+        <div class="p-6">
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Business Type" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.business_type|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Registration Number" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.business_registration_number|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Tax ID" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.tax_id|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Business Phone" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.business_phone|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Business Email" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.business_email|default:"—" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Business Address" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.business_address|default:"—"|linebreaks }}</dd>
+                </div>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Store Settings -->
+    <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{% trans "Store Settings" %}</h2>
+        </div>
+        <div class="p-6">
+            <dl class="space-y-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "International Shipping" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">
+                        {% if seller_profile.supports_international_shipping %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                {% trans "Enabled" %}
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {% trans "Disabled" %}
+                            </span>
+                        {% endif %}
+                    </dd>
+                </div>
+                {% if seller_profile.return_policy %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Return Policy" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.return_policy|linebreaks }}</dd>
+                </div>
+                {% endif %}
+                {% if seller_profile.shipping_policy %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500">{% trans "Shipping Policy" %}</dt>
+                    <dd class="mt-1 text-sm text-gray-900">{{ seller_profile.shipping_policy|linebreaks }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+    </div>
+
+    <!-- Verification Status -->
+    <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">{% trans "Verification Status" %}</h2>
+        </div>
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+                        {% if seller_profile.verification_status == 'verified' %}bg-green-100 text-green-800
+                        {% elif seller_profile.verification_status == 'pending' %}bg-yellow-100 text-yellow-800
+                        {% elif seller_profile.verification_status == 'rejected' %}bg-red-100 text-red-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ seller_profile.get_verification_status_display }}
+                    </span>
+                    <p class="mt-2 text-sm text-gray-600">
+                        {% if seller_profile.verification_status == 'pending' %}
+                            {% trans "Your verification request is being reviewed. We'll notify you once it's complete." %}
+                        {% elif seller_profile.verification_status == 'verified' %}
+                            {% trans "Your store has been verified. Thank you for providing the required documents." %}
+                        {% elif seller_profile.verification_status == 'rejected' %}
+                            {% trans "Your verification request was rejected. Please check your documents and try again." %}
+                        {% else %}
+                            {% trans "Please complete KYC verification to get your store verified." %}
+                        {% endif %}
+                    </p>
+                </div>
+                {% if seller_profile.verification_status != 'verified' %}
+                    <a href="{% url 'sellers:kyc_upload' %}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        {% trans "Upload KYC Documents" %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

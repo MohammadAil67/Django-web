@@ -138,7 +138,12 @@ class AddToWishlistView(LoginRequiredMixin, View):
         else:
             messages.info(request, _('Product is already in your wishlist.'))
         
-        #return redirect('products:detail', slug=product.slug)
+        # Redirect back to the page they came from, or to product detail
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('products:detail', slug=product.slug)
 
 class RemoveFromWishlistView(LoginRequiredMixin, View):
     def post(self, request, product_id):
@@ -150,5 +155,9 @@ class RemoveFromWishlistView(LoginRequiredMixin, View):
         wishlist_item.delete()
         messages.success(request, _('Product removed from wishlist!'))
         
-        # Redirect back to the page they came from
-        #return redirect(request.META.get('HTTP_REFERER', 'users:wishlist'))
+        # Redirect back to the page they came from, or to wishlist page
+        referer = request.META.get('HTTP_REFERER')
+        if referer:
+            return redirect(referer)
+        else:
+            return redirect('users:wishlist')
