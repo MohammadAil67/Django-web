@@ -36,18 +36,18 @@
                 </div>
                 
                 <!-- Stats -->
-                <div class="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
+                <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-gray-200">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">10K+</div>
-                        <div class="text-sm text-gray-600">{% trans "Products" %}</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_products|default:0 }}+</div>
+                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Products" %}</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">500+</div>
-                        <div class="text-sm text-gray-600">{% trans "Sellers" %}</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_sellers|default:0 }}+</div>
+                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Sellers" %}</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">50K+</div>
-                        <div class="text-sm text-gray-600">{% trans "Customers" %}</div>
+                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_buyers|default:0 }}+</div>
+                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Customers" %}</div>
                     </div>
                 </div>
             </div>
@@ -76,53 +76,156 @@
     </div>
 </section>
 
-<!-- Featured Deals -->
+<!-- Active Campaigns -->
+{% if active_campaigns %}
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">{% trans "Featured Deals" %}</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">
-                {% trans "Discover amazing discounts and special offers from our top sellers. Limited time deals you don't want to miss!" %}
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {% for i in "1234" %}
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
-                <div class="relative">
-                    <div class="bg-gray-200 h-48 skeleton"></div>
-                    <div class="absolute top-3 left-3">
-                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                            {% trans "30% OFF" %}
-                        </span>
-                    </div>
+        {% for campaign in active_campaigns %}
+        <div class="{% if not forloop.first %}mt-16{% endif %}">
+            <!-- Campaign Header -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-full text-sm font-semibold mb-4">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{ campaign.get_campaign_type_display }}
                 </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-gray-900 mb-2">{% trans "Premium Product" %}</h3>
-                    <p class="text-gray-600 text-sm mb-3">{% trans "High-quality product with amazing features" %}</p>
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-lg font-bold text-blue-600">$49</span>
-                            <span class="text-sm text-gray-500 line-through">$70</span>
-                        </div>
-                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-minimal">
-                            {% trans "Add to Cart" %}
-                        </button>
-                    </div>
+                
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ campaign.name }}</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+                    {{ campaign.description }}
+                </p>
+                
+                <!-- Campaign End Date -->
+                <div class="text-sm text-gray-500">
+                    {% trans "Ends" %}: {{ campaign.end_date|date:"F d, Y" }}
                 </div>
             </div>
-            {% endfor %}
+            
+            <!-- Campaign Products -->
+            {% if campaign.products.all %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for product in campaign.products.all|slice:":8" %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="relative">
+                        <a href="{% url 'products:detail' product.slug %}">
+                            {% if product.main_image %}
+                            <img src="{{ product.main_image.image.url }}" 
+                                 alt="{{ product.title }}" 
+                                 class="w-full h-48 object-cover">
+                            {% else %}
+                            <div class="bg-gray-200 h-48 flex items-center justify-center">
+                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            {% endif %}
+                        </a>
+                        
+                        <!-- Discount Badge -->
+                        {% if product.discount_percentage > 0 %}
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                                -{{ product.discount_percentage }}% {% trans "OFF" %}
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Wishlist Button -->
+                        <button onclick="toggleWishlist({{ product.id }}, this)" 
+                                class="absolute bottom-3 right-3 bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-shadow">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="p-4">
+                        <a href="{% url 'products:detail' product.slug %}">
+                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                                {{ product.title }}
+                            </h3>
+                        </a>
+                        
+                        <!-- Rating -->
+                        <div class="flex items-center mb-3">
+                            {% for i in "12345" %}
+                            <svg class="w-4 h-4 {% if forloop.counter <= product.rating %}text-yellow-400{% else %}text-gray-300{% endif %}" 
+                                 fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                            {% endfor %}
+                            <span class="text-sm text-gray-600 ml-2">({{ product.review_count }})</span>
+                        </div>
+                        
+                        <!-- Price -->
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-lg font-bold text-blue-600">${{ product.price }}</span>
+                                {% if product.old_price and product.old_price > product.price %}
+                                <span class="text-sm text-gray-500 line-through">${{ product.old_price }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Add to Cart -->
+                            {% if product.stock_quantity > 0 %}
+                            <button onclick="addToCart({{ product.id }})" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                                {% trans "Add" %}
+                            </button>
+                            {% else %}
+                            <span class="text-xs text-red-600 font-medium">{% trans "Out of Stock" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- View Campaign Button -->
+            <div class="text-center mt-8">
+                <a href="{% url 'campaigns:detail' campaign.slug %}" 
+                   class="inline-block bg-gradient-to-r from-red-500 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-pink-700 transition-colors focus-ring">
+                    {% trans "View All" %} {{ campaign.name }} {% trans "Deals" %} →
+                </a>
+            </div>
+            {% endif %}
         </div>
-        
-        <div class="text-center mt-12">
-            <a href="{% url 'campaigns:list' %}" 
-               class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-minimal focus-ring">
-                {% trans "View All Deals" %}
-            </a>
-        </div>
+        {% endfor %}
     </div>
 </section>
 
+{% else %}
+<!-- No Active Campaigns -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+                <div class="mb-6">
+                    <svg class="mx-auto h-24 w-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                    </svg>
+                </div>
+                
+                <h3 class="text-2xl font-semibold text-gray-900 mb-3">
+                    {% trans "No Active Campaigns" %}
+                </h3>
+                <p class="text-gray-600 mb-8">
+                    {% trans "We're currently preparing exciting campaigns for you. Check back soon for exclusive offers!" %}
+                </p>
+                
+                <a href="{% url 'products:list' %}" 
+                   class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors focus-ring">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    {% trans "Browse All Products" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
 <!-- Categories -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

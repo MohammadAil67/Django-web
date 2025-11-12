@@ -1,0 +1,295 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Seller Onboarding" %}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+            {% trans "Welcome to Your Seller Journey!" %}
+        </h1>
+        <p class="text-xl text-gray-600">
+            {% trans "Complete these steps to start selling on our marketplace" %}
+        </p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="mb-12">
+        <div class="flex items-center justify-between max-w-4xl mx-auto">
+            <!-- Step 1: Store Setup -->
+            <div class="flex-1">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center {% if seller_profile.store_name %}bg-green-500 text-white{% else %}bg-blue-500 text-white{% endif %} mb-2">
+                        {% if seller_profile.store_name %}
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        {% else %}
+                            <span class="text-2xl font-bold">1</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 text-center">{% trans "Store Setup" %}</p>
+                </div>
+            </div>
+
+            <div class="flex-1 h-1 {% if seller_profile.store_name %}bg-green-500{% else %}bg-gray-300{% endif %}"></div>
+
+            <!-- Step 2: KYC Verification -->
+            <div class="flex-1">
+                <div class="flex flex-col items-center">
+                    <a href="{% url 'sellers:kyc_upload' %}" class="w-16 h-16 rounded-full flex items-center justify-center bg-blue-500 text-white mb-2 hover:bg-blue-600 transition-colors">
+                        <span class="text-2xl font-bold">2</span>
+                    </a>
+                    <p class="text-sm font-medium text-gray-700 text-center">{% trans "KYC Verification" %}</p>
+                </div>
+            </div>
+
+            <div class="flex-1 h-1 bg-gray-300"></div>
+
+            <!-- Step 3: Add Products -->
+            <div class="flex-1">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center {% if products_count > 0 %}bg-green-500 text-white{% elif kyc_completed %}bg-blue-500 text-white{% else %}bg-gray-300 text-gray-600{% endif %} mb-2">
+                        {% if products_count > 0 %}
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                        {% else %}
+                            <span class="text-2xl font-bold">3</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-sm font-medium text-gray-700 text-center">{% trans "Add Products" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Step 1: Store Setup -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">{% trans "Store Setup" %}</h3>
+                    {% if seller_profile.store_name %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            {% trans "Complete" %}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                            {% trans "Pending" %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-gray-600 mb-6">
+                    {% trans "Set up your store profile with logo, banner, and business information" %}
+                </p>
+
+                <ul class="space-y-2 mb-6 text-sm text-gray-700">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 {% if seller_profile.store_name %}text-green-500{% else %}text-gray-400{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Store name and description" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 {% if seller_profile.logo %}text-green-500{% else %}text-gray-400{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Store logo" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 {% if seller_profile.business_email %}text-green-500{% else %}text-gray-400{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Business contact info" %}
+                    </li>
+                </ul>
+
+                <a href="{% url 'sellers:profile_edit' %}" 
+                   class="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    {% if seller_profile.store_name %}
+                        {% trans "Edit Store Profile" %}
+                    {% else %}
+                        {% trans "Set Up Store" %}
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+
+        <!-- Step 2: KYC Verification -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">{% trans "KYC Verification" %}</h3>
+                    {% if seller_profile.verification_status == 'verified' %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            {% trans "Verified" %}
+                        </span>
+                    {% elif seller_profile.verification_status == 'pending' %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                            {% trans "Under Review" %}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            {% trans "Not Started" %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-gray-600 mb-6">
+                    {% trans "Upload required documents to verify your identity and business" %}
+                </p>
+
+                <ul class="space-y-2 mb-6 text-sm text-gray-700">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Identity document" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Business license (optional)" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Address proof" %}
+                    </li>
+                </ul>
+
+                {% if seller_profile.verification_status == 'verified' %}
+                    <button disabled 
+                       class="block w-full text-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-50 cursor-not-allowed">
+                        {% trans "Verified ✓" %}
+                    </button>
+                {% elif seller_profile.verification_status == 'pending' %}
+                    <button disabled 
+                       class="block w-full text-center py-2 px-4 border border-yellow-300 rounded-md shadow-sm text-sm font-medium text-yellow-800 bg-yellow-50 cursor-not-allowed">
+                        {% trans "Under Review..." %}
+                    </button>
+                {% else %}
+                    <a href="{% url 'sellers:kyc_upload' %}" 
+                       class="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        {% trans "Upload Documents" %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Step 3: Add Products -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900">{% trans "Add Products" %}</h3>
+                    {% if products_count > 0 %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                            {{ products_count }} {% trans "Added" %}
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                            {% trans "Not Started" %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-gray-600 mb-6">
+                    {% trans "List your first products to start selling on the marketplace" %}
+                </p>
+
+                <ul class="space-y-2 mb-6 text-sm text-gray-700">
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Product title & description" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Product images" %}
+                    </li>
+                    <li class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        {% trans "Pricing & inventory" %}
+                    </li>
+                </ul>
+
+                <a href="{% url 'sellers:product_create' %}" 
+                   class="block w-full text-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    {% if products_count > 0 %}
+                        {% trans "Add More Products" %}
+                    {% else %}
+                        {% trans "Add Your First Product" %}
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="bg-blue-50 rounded-lg p-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3 flex-1">
+                <h3 class="text-sm font-medium text-blue-800">
+                    {% trans "Need Help?" %}
+                </h3>
+                <div class="mt-2 text-sm text-blue-700">
+                    <p>
+                        {% trans "Our seller support team is here to help you get started. Check out our" %} 
+                        <a href="#" class="font-medium underline">{% trans "Seller Guide" %}</a> 
+                        {% trans "or" %} 
+                        <a href="#" class="font-medium underline">{% trans "contact support" %}</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="{% url 'sellers:dashboard' %}" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            {% trans "Go to Dashboard" %}
+        </a>
+
+        <a href="{% url 'sellers:products' %}" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            {% trans "View Products" %}
+        </a>
+
+        <a href="{% url 'sellers:profile' %}" class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            {% trans "View Profile" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -265,33 +265,6 @@
             </div>
         </div>
 
-        <!-- Status & Visibility -->
-        <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
-            <h2 class="text-lg font-medium text-gray-900 mb-4">{% trans "Status & Visibility" %}</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="{{ form.status.id_for_label }}" class="block text-sm font-medium text-gray-700">
-                        {% trans "Status" %} <span class="text-red-500">*</span>
-                    </label>
-                    {{ form.status }}
-                    {% if form.status.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ form.status.errors.0 }}</p>
-                    {% endif %}
-                </div>
-
-                <div class="flex items-center pt-6">
-                    <label class="flex items-center">
-                        {{ form.is_featured }}
-                        <span class="ml-2 text-sm text-gray-700">{% trans "Featured Product" %}</span>
-                    </label>
-                    {% if form.is_featured.errors %}
-                        <p class="mt-1 text-sm text-red-600">{{ form.is_featured.errors.0 }}</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
         <!-- Form Errors -->
         {% if form.non_field_errors %}
             <div class="bg-red-50 border border-red-200 rounded-lg p-4">

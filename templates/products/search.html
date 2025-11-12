@@ -1,0 +1,564 @@
+{% extends 'base/base.html' %}
+{% load static i18n %}
+
+{% block title %}
+    {% if query %}
+        {% blocktrans with query=query %}Search results for "{{ query }}"{% endblocktrans %} - {% trans "Minimalist Marketplace" %}
+    {% else %}
+        {% trans "Product Search - Minimalist Marketplace" %}
+    {% endif %}
+{% endblock %}
+
+{% block meta_description %}
+    {% if query %}
+        {% blocktrans with query=query %}Find products matching "{{ query }}" from verified sellers.{% endblocktrans %}
+    {% else %}
+        {% trans "Search our marketplace for amazing products from verified sellers." %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Search Header -->
+    <div class="mb-8">
+        {% if query %}
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">
+            {% blocktrans with query=query %}Search results for "{{ query }}"{% endblocktrans %}
+        </h1>
+        <p class="text-gray-600">
+            {% if products %}
+                {% blocktrans count counter=products|length %}
+                    Found {{ counter }} product
+                {% plural %}
+                    Found {{ counter }} products
+                {% endblocktrans %}
+            {% else %}
+                {% trans "No products found matching your search" %}
+            {% endif %}
+        </p>
+        {% else %}
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{% trans "Product Search" %}</h1>
+        <p class="text-gray-600">{% trans "Search our marketplace for products" %}</p>
+        {% endif %}
+    </div>
+
+    <!-- Search Bar (Prominent) -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+        <form method="get" action="{% url 'products:search' %}" class="space-y-4">
+            <div class="flex gap-4">
+                <!-- Search Input -->
+                <div class="flex-1">
+                    <label for="search-input" class="sr-only">{% trans "Search products" %}</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            name="q" 
+                            id="search-input"
+                            value="{{ query }}"
+                            placeholder="{% trans 'Search for products, brands, categories...' %}"
+                            class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                            autofocus
+                        >
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <button 
+                    type="submit" 
+                    class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                >
+                    {% trans "Search" %}
+                </button>
+            </div>
+
+            <!-- Advanced Filters Toggle -->
+            {% if query %}
+            <button 
+                type="button" 
+                onclick="toggleFilters()" 
+                class="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+            >
+                <svg id="filter-icon-closed" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+                <svg id="filter-icon-open" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                </svg>
+                <span>{% trans "Advanced Filters" %}</span>
+            </button>
+
+            <!-- Advanced Filters (Collapsible) -->
+            <div id="advanced-filters" class="hidden pt-4 border-t space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Category -->
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "Category" %}
+                        </label>
+                        <select 
+                            name="category" 
+                            id="category"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="">{% trans "All Categories" %}</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.slug }}" {% if request.GET.category == cat.slug %}selected{% endif %}>
+                                {{ cat.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "Price Range" %}
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input 
+                                type="number" 
+                                name="min_price" 
+                                placeholder="{% trans 'Min' %}"
+                                value="{{ request.GET.min_price }}"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            >
+                            <span class="text-gray-500">-</span>
+                            <input 
+                                type="number" 
+                                name="max_price" 
+                                placeholder="{% trans 'Max' %}"
+                                value="{{ request.GET.max_price }}"
+                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Sort -->
+                    <div>
+                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-1">
+                            {% trans "Sort By" %}
+                        </label>
+                        <select 
+                            name="sort" 
+                            id="sort"
+                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        >
+                            <option value="">{% trans "Relevance" %}</option>
+                            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>
+                                {% trans "Price: Low to High" %}
+                            </option>
+                            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>
+                                {% trans "Price: High to Low" %}
+                            </option>
+                            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>
+                                {% trans "Highest Rated" %}
+                            </option>
+                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>
+                                {% trans "Newest First" %}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Apply/Clear Buttons -->
+                <div class="flex gap-3">
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium"
+                    >
+                        {% trans "Apply Filters" %}
+                    </button>
+                    <a 
+                        href="{% url 'products:search' %}{% if query %}?q={{ query }}{% endif %}" 
+                        class="px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium"
+                    >
+                        {% trans "Clear Filters" %}
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if query %}
+        {% if products %}
+        <!-- View Toggle -->
+        <div class="flex justify-between items-center mb-6">
+            <p class="text-sm text-gray-600">
+                {% if is_paginated %}
+                    {% trans "Showing results" %} {{ page_obj.start_index }}-{{ page_obj.end_index }} {% trans "of" %} {{ page_obj.paginator.count }}
+                {% endif %}
+            </p>
+
+            <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                <button 
+                    type="button"
+                    onclick="toggleView('grid')" 
+                    id="grid-view-btn"
+                    class="view-toggle-btn active px-3 py-2 rounded-md transition-colors"
+                    title="{% trans 'Grid View' %}"
+                >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                </button>
+                <button 
+                    type="button"
+                    onclick="toggleView('list')" 
+                    id="list-view-btn"
+                    class="view-toggle-btn px-3 py-2 rounded-md transition-colors"
+                    title="{% trans 'List View' %}"
+                >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Results Grid -->
+        <div id="products-container" class="products-grid">
+            {% for product in products %}
+            <div class="product-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md overflow-hidden transition-all duration-200">
+                
+                <!-- Product Image -->
+                <div class="product-image relative">
+                    <a href="{% url 'products:detail' slug=product.slug %}" class="block">
+                        {% if product.main_image %}
+                            <img src="{{ product.main_image.image.url }}" 
+                                 alt="{{ product.title }}"
+                                 class="product-img w-full h-48 object-cover">
+                        {% else %}
+                            <div class="product-img w-full h-48 bg-gray-200 flex items-center justify-center">
+                                <svg class="w-12 h-12 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </a>
+
+                    <!-- Wishlist Button -->
+                    <button 
+                        onclick="toggleWishlist({{ product.id }}, this)" 
+                        class="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
+                    >
+                        {% if user.is_authenticated and product.id in user_wishlist_ids %}
+                        <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                        </svg>
+                        {% else %}
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.0 0 00-6.364 0z"/>
+                        </svg>
+                        {% endif %}
+                    </button>
+                </div>
+
+                <!-- Product Info -->
+                <div class="product-info p-4">
+                    <div class="mb-2 product-seller">
+                        <a href="{% url 'sellers:store_detail' slug=product.seller.store_slug %}" 
+                           class="text-xs text-gray-500 hover:text-blue-600 transition-colors">
+                            {{ product.seller.store_name }}
+                        </a>
+                    </div>
+                    
+                    <h3 class="product-title font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
+                        <a href="{% url 'products:detail' slug=product.slug %}"
+                           class="hover:text-blue-600 transition-colors">
+                            {{ product.title }}
+                        </a>
+                    </h3>
+
+                    <p class="product-description text-sm text-gray-600 mb-3 line-clamp-2 hidden">
+                        {{ product.short_description|default:product.description|truncatewords:20 }}
+                    </p>
+
+                    <div class="product-rating flex items-center mb-3">
+                        <div class="flex items-center">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= product.rating %}
+                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                {% else %}
+                                <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="text-sm text-gray-600 ml-2">({{ product.review_count }})</span>
+                    </div>
+
+                    <div class="product-price mb-3">
+                        <div class="flex items-baseline gap-2">
+                            <span class="text-xl font-bold text-blue-600">${{ product.price }}</span>
+                            {% if product.old_price and product.old_price > product.price %}
+                            <span class="text-sm text-gray-500 line-through">${{ product.old_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if product.stock_quantity > 0 %}
+                    <button 
+                        onclick="addToCart({{ product.id }})"
+                        class="product-add-btn w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                    >
+                        {% trans "Add to Cart" %}
+                    </button>
+                    {% else %}
+                    <button 
+                        disabled
+                        class="product-add-btn w-full bg-gray-300 text-gray-500 py-2 rounded-lg cursor-not-allowed font-medium text-sm"
+                    >
+                        {% trans "Out of Stock" %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="mt-12 flex justify-center">
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                {% if page_obj.has_previous %}
+                <a href="?q={{ query }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}&page={{ page_obj.previous_page_number }}" 
+                   class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    {% trans "Previous" %}
+                </a>
+                {% endif %}
+
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                <a href="?q={{ query }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}&page={{ page_obj.next_page_number }}" 
+                   class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    {% trans "Next" %}
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- No Results -->
+        <div class="text-center py-16">
+            <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                {% blocktrans with query=query %}No results found for "{{ query }}"{% endblocktrans %}
+            </h3>
+            <p class="text-gray-600 mb-6">{% trans "Try different keywords or check your spelling" %}</p>
+            
+            <div class="space-y-4">
+                <p class="text-sm font-medium text-gray-700">{% trans "Search suggestions:" %}</p>
+                <ul class="text-sm text-gray-600 space-y-2">
+                    <li>• {% trans "Check your spelling and try again" %}</li>
+                    <li>• {% trans "Try more general keywords" %}</li>
+                    <li>• {% trans "Try different keywords" %}</li>
+                    <li>• {% trans "Browse our categories instead" %}</li>
+                </ul>
+            </div>
+
+            <a href="{% url 'products:list' %}" class="inline-block mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                {% trans "Browse All Products" %}
+            </a>
+        </div>
+        {% endif %}
+    {% else %}
+    <!-- No Search Query - Popular/Featured Products -->
+    <div class="text-center py-12">
+        <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">{% trans "Start searching" %}</h3>
+        <p class="text-gray-600 mb-6">{% trans "Enter keywords above to find products" %}</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Toggle Advanced Filters
+function toggleFilters() {
+    const filters = document.getElementById('advanced-filters');
+    const iconClosed = document.getElementById('filter-icon-closed');
+    const iconOpen = document.getElementById('filter-icon-open');
+    
+    filters.classList.toggle('hidden');
+    iconClosed.classList.toggle('hidden');
+    iconOpen.classList.toggle('hidden');
+}
+
+// View Toggle
+let currentView = localStorage.getItem('productView') || 'grid';
+
+function toggleView(view) {
+    currentView = view;
+    localStorage.setItem('productView', view);
+    
+    const container = document.getElementById('products-container');
+    const gridBtn = document.getElementById('grid-view-btn');
+    const listBtn = document.getElementById('list-view-btn');
+    
+    if (view === 'grid') {
+        container.classList.remove('products-list');
+        container.classList.add('products-grid');
+        gridBtn.classList.add('active');
+        listBtn.classList.remove('active');
+        document.querySelectorAll('.product-description').forEach(el => el.classList.add('hidden'));
+    } else {
+        container.classList.remove('products-grid');
+        container.classList.add('products-list');
+        gridBtn.classList.remove('active');
+        listBtn.classList.add('active');
+        document.querySelectorAll('.product-description').forEach(el => el.classList.remove('hidden'));
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('products-container')) {
+        toggleView(currentView);
+    }
+});
+
+// Wishlist & Cart functions (same as list.html)
+function toggleWishlist(productId, button) {
+    const isInWishlist = button.querySelector('svg').getAttribute('fill') === 'currentColor';
+    isInWishlist ? removeFromWishlist(productId, button) : addToWishlist(productId, button);
+}
+
+function addToWishlist(productId, button) {
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    fetch(`/users/wishlist/add/${productId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken }
+    })
+    .then(() => {
+        button.innerHTML = '<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>';
+        button.disabled = false;
+    });
+}
+
+function removeFromWishlist(productId, button) {
+    if (button.disabled) return;
+    button.disabled = true;
+    
+    fetch(`/users/wishlist/remove/${productId}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken }
+    })
+    .then(() => {
+        button.innerHTML = '<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>';
+        button.disabled = false;
+    });
+}
+
+function addToCart(productId) {
+    alert('{% trans "Add to cart functionality coming soon!" %}');
+}
+</script>
+
+<style>
+/* View Toggle */
+.view-toggle-btn {
+    color: #6B7280;
+}
+
+.view-toggle-btn.active {
+    background-color: white;
+    color: #2563EB;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Grid/List Views (same as list.html) */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .products-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.products-list .product-card {
+    display: flex;
+    flex-direction: row;
+}
+
+.products-list .product-image {
+    flex-shrink: 0;
+    width: 240px;
+}
+
+.products-list .product-img {
+    height: 240px;
+}
+
+.products-list .product-info {
+    flex: 1;
+    padding: 1.5rem;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
+
+{% endblock %}
