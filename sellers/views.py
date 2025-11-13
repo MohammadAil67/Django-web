@@ -116,6 +116,7 @@ class SellerProductListView(LoginRequiredMixin, ListView):
         })
         return context
 
+
 class SellerProductCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Product
     template_name = 'sellers/product_form.html'

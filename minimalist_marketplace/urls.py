@@ -84,7 +84,7 @@ urlpatterns = [
     path('campaigns/', include('campaigns.urls')),
     
     # Admin dashboard
-    path('dashboard/', include('moderation.urls')),
+    #path('dashboard/', include('moderation.urls')),
     
     # Notifications
     path('notifications/', include('notifications.urls')),

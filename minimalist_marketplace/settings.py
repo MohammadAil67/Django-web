@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'sellers',
     'products',
     'campaigns',
-    'moderation',
+    #'moderation',
     'notifications',
 ]
 
