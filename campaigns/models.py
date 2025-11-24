@@ -40,8 +40,8 @@ class Campaign(models.Model):
     )
     
     # Timing
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True, blank=True)    
+    end_date = models.DateTimeField(null=True, blank=True)  
     
     # Visual assets
     banner_image = models.ImageField(upload_to='campaigns/banners/', blank=True, null=True)
@@ -123,6 +123,9 @@ class Campaign(models.Model):
         """Calculate campaign progress"""
         from django.utils import timezone
         now = timezone.now()
+
+        if not self.start_date or not self.end_date:
+            return 0
         
         if now < self.start_date:
             return 0
@@ -318,8 +321,8 @@ class Ad(models.Model):
     )
     
     # Scheduling
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    start_date = models.DateTimeField(null=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
     
     # Pricing and budget
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

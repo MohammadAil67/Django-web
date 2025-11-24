@@ -210,7 +210,7 @@ class UserProfileForm(forms.ModelForm):
         fields = [
             'first_name', 'last_name', 'email', 'phone_number',
             'preferred_language', 'email_notifications',
-            'push_notifications', 'sms_notifications', 'reduced_data_mode'
+            'push_notifications', 'sms_notifications', 'reduced_data_mode','profile_image'
         ]
         widgets = {
             'email_notifications': forms.CheckboxInput(),
@@ -247,6 +247,10 @@ class UserProfileForm(forms.ModelForm):
                 Field('phone_number', css_class='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'),
                 css_class='space-y-4'
             ),
+            Div(
+                Field('profile_image', css_class='mt-1 block w-full'),
+                css_class='space-y-4',
+                ),
             Div(
                 Field('preferred_language', css_class='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'),
                 css_class='space-y-4'

@@ -24,6 +24,7 @@ class User(AbstractUser):
     email_notifications = models.BooleanField(default=True)
     push_notifications = models.BooleanField(default=True)
     sms_notifications = models.BooleanField(default=False)
+    profile_image = models.ImageField(upload_to='profiles/', blank=True, null=True)
     
     # Low bandwidth preference
     reduced_data_mode = models.BooleanField(default=False)

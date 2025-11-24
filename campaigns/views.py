@@ -56,7 +56,7 @@ class CampaignDetailView(DetailView):
             status='active',
             start_date__lte=now,
             end_date__gte=now
-        ).prefetch_related('eligible_sellers', 'eligible_categories')
+        ).prefetch_related('eligible_sellers', 'eligible_categories','products')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

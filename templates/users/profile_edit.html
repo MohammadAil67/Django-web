@@ -104,7 +104,37 @@
                             <p class="mt-2 text-sm text-red-600">{{ form.email.errors.0 }}</p>
                         {% endif %}
                     </div>
+                <!-- Profile Picture Upload -->
+                <div>
+                    <label for="{{ form.profile_image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        {% trans "Profile Picture" %}
+                    </label>
+                    <div class="mt-1">
+                        <input 
+                            type="file" 
+                            name="{{ form.profile_image.name }}"
+                            id="{{ form.profile_image.id_for_label }}"
+                            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border file:border-gray-300 file:text-sm file:font-medium file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100"
+                        >
+                    </div>
+                    {% if form.profile_image.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.profile_image.errors.0 }}</p>
+                    {% endif %}
                 </div>
+                </div>
+                <!-- Current Profile Picture Preview -->
+                {% if user.profile_image %}
+                <div class="mt-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        {% trans "Current Picture" %}
+                    </label>
+                    <img 
+                        src="{{ user.profile_image.url }}" 
+                        alt="{% trans 'Current profile picture' %}"
+                        class="h-24 w-24 rounded-full object-cover border-2 border-gray-200"
+                    >
+                </div>
+                {% endif %}
 
                 <!-- Phone Number Field -->
                 <div class="space-y-4">

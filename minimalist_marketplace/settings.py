@@ -135,6 +135,11 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 # Email settings (for notifications)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Login URL
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
 # Security settings for production
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
