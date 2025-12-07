@@ -6,83 +6,37 @@
 
 {% block content %}
 
-<!-- Hero Section -->
-<section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<section class="relative py-24 flex items-center min-h-[600px]" style="background-image: url('media/products/addicted.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
+        
+        <div class="max-w-3xl mx-auto space-y-8">
             
-            <!-- Hero Content -->
-            <div class="space-y-8">
-                <div class="space-y-4">
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                        {% trans "Welcome to" %}
-                        <span class="text-blue-600">{% trans "Minimalist" %}</span>
-                        {% trans "Marketplace" %}
-                    </h1>
-                    <p class="text-xl text-gray-600 leading-relaxed">
-                        {% trans "Discover amazing products from verified sellers. Clean design, powerful features, and seamless shopping experience in one beautiful package." %}
-                    </p>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="{% url 'products:list' %}" 
-                       class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-minimal text-center focus-ring">
-                        {% trans "Browse Products" %}
-                    </a>
-                    <a href="{% url 'users:register_seller' %}" 
-                       class="bg-white text-gray-700 px-8 py-3 rounded-lg font-semibold border-2 border-gray-300 hover:border-gray-400 transition-minimal text-center focus-ring">
-                        {% trans "Start Selling" %}
-                    </a>
-                </div>
-                
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-8 border-t border-gray-200">
-                    <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_products|default:0 }}+</div>
-                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Products" %}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_sellers|default:0 }}+</div>
-                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Sellers" %}</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-blue-600">{{ total_buyers|default:0 }}+</div>
-                        <div class="text-xs sm:text-sm text-gray-600">{% trans "Customers" %}</div>
-                    </div>
-                </div>
+
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'products:list' %}" 
+                class="bg-transparent text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white hover:bg-white hover:text-gray-900 transition-transform transform hover:-translate-y-1 focus-ring">
+                    {% trans "Browse Products" %}
+                </a>
+                <a href="{% url 'users:register_seller' %}" 
+                   class="bg-transparent text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white hover:bg-white hover:text-gray-900 transition-transform transform hover:-translate-y-1 focus-ring">
+                    {% trans "Start Selling" %}
+                </a>
             </div>
             
-            <!-- Hero Image -->
-            <div class="relative">
-                <div class="bg-white rounded-2xl shadow-xl p-8 transform rotate-3 hover:rotate-0 transition-minimal">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-4">
-                            <div class="bg-gray-200 rounded-lg h-24 skeleton"></div>
-                            <div class="bg-gray-200 rounded-lg h-20 skeleton"></div>
-                        </div>
-                        <div class="space-y-4 mt-8">
-                            <div class="bg-gray-200 rounded-lg h-20 skeleton"></div>
-                            <div class="bg-gray-200 rounded-lg h-24 skeleton"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute -bottom-4 -right-4 bg-blue-600 text-white p-4 rounded-xl shadow-lg">
-                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-                    </svg>
-                </div>
-            </div>
+
+
         </div>
     </div>
 </section>
 
-<!-- Active Campaigns -->
 {% if active_campaigns %}
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {% for campaign in active_campaigns %}
         <div class="{% if not forloop.first %}mt-16{% endif %}">
-            <!-- Campaign Header -->
             <div class="text-center mb-12">
                 <div class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-full text-sm font-semibold mb-4">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -96,13 +50,11 @@
                     {{ campaign.description }}
                 </p>
                 
-                <!-- Campaign End Date -->
                 <div class="text-sm text-gray-500">
                     {% trans "Ends" %}: {{ campaign.end_date|date:"F d, Y" }}
                 </div>
             </div>
             
-            <!-- Campaign Products -->
             {% if campaign.products.all %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% for product in campaign.products.all|slice:":8" %}
@@ -122,7 +74,6 @@
                             {% endif %}
                         </a>
                         
-                        <!-- Discount Badge -->
                         {% if product.discount_percentage > 0 %}
                         <div class="absolute top-3 left-3">
                             <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
@@ -131,7 +82,6 @@
                         </div>
                         {% endif %}
                         
-                        <!-- Wishlist Button -->
                         <button onclick="toggleWishlist({{ product.id }}, this)" 
                                 class="absolute bottom-3 right-3 bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-shadow">
                             <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +97,6 @@
                             </h3>
                         </a>
                         
-                        <!-- Rating -->
                         <div class="flex items-center mb-3">
                             {% for i in "12345" %}
                             <svg class="w-4 h-4 {% if forloop.counter <= product.rating %}text-yellow-400{% else %}text-gray-300{% endif %}" 
@@ -158,7 +107,6 @@
                             <span class="text-sm text-gray-600 ml-2">({{ product.review_count }})</span>
                         </div>
                         
-                        <!-- Price -->
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-2">
                                 <span class="text-lg font-bold text-blue-600">${{ product.price }}</span>
@@ -167,7 +115,6 @@
                                 {% endif %}
                             </div>
                             
-                            <!-- Add to Cart -->
                             {% if product.stock_quantity > 0 %}
                             <button onclick="addToCart({{ product.id }})" 
                                     class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
@@ -182,7 +129,6 @@
                 {% endfor %}
             </div>
             
-            <!-- View Campaign Button -->
             <div class="text-center mt-8">
                 <a href="{% url 'campaigns:detail' campaign.slug %}" 
                    class="inline-block bg-gradient-to-r from-red-500 to-pink-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-red-600 hover:to-pink-700 transition-colors focus-ring">
@@ -196,7 +142,6 @@
 </section>
 
 {% else %}
-<!-- No Active Campaigns -->
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center py-16">
@@ -226,7 +171,6 @@
     </div>
 </section>
 {% endif %}
-<!-- Categories -->
 <section class="py-16 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -266,7 +210,6 @@
     </div>
 </section>
 
-<!-- Why Choose Us -->
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -316,7 +259,6 @@
     </div>
 </section>
 
-<!-- Call to Action -->
 <section class="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-white mb-4">
